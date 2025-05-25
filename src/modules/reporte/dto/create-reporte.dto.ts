@@ -1,0 +1,15 @@
+export class CreateReporteDto {
+  readonly hora_entrada: string;
+  readonly hora_salida: string;
+  readonly area: string;
+  readonly marca: string;
+  readonly modelo: string;
+  readonly serie: string;
+  readonly tipo: string;
+  readonly capacidad: string;
+  readonly volt: string;
+  readonly amp: string;
+  readonly descripcion: string;
+  readonly recomendacion: string;
+  readonly id_ticket: number;
+}

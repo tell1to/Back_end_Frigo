@@ -21,6 +21,7 @@ import { ReporteModule } from './modules/reporte/reporte.module';
 import { MaterialModule } from './modules/material/material.module';
 import { MaterialesxreportesModule } from './modules/materialesxreportes/materialesxreportes.module';
 
+
 @Module({
   imports: [
     TypeOrmModule.forRoot({

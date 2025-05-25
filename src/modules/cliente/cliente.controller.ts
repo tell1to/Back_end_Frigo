@@ -1,5 +1,46 @@
-
-import { Controller } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  ParseIntPipe,
+} from '@nestjs/common';
+import { ClienteService } from './cliente.service';
+import { CreateClienteDto } from './dto/create-cliente.dto';
+import { UpdateClienteDto } from './dto/update-cliente.dto';
 
 @Controller('cliente')
-export class ClienteController {}
+export class ClienteController {
+  constructor(private readonly clienteService: ClienteService) {}
+
+  @Post()
+  create(@Body() dto: CreateClienteDto) {
+    return this.clienteService.create(dto);
+  }
+
+  @Get()
+  findAll() {
+    return this.clienteService.findAll();
+  }
+
+  @Get(':cedula')
+  findOne(@Param('cedula', ParseIntPipe) cedula: number) {
+    return this.clienteService.findOne(cedula);
+  }
+
+  @Put(':cedula')
+  update(
+    @Param('cedula', ParseIntPipe) cedula: number,
+    @Body() dto: UpdateClienteDto,
+  ) {
+    return this.clienteService.update(cedula, dto);
+  }
+
+  @Delete(':cedula')
+  remove(@Param('cedula', ParseIntPipe) cedula: number) {
+    return this.clienteService.remove(cedula);
+  }
+}

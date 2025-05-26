@@ -4,8 +4,7 @@ import { Repository } from 'typeorm';
 import { Usuario } from './entities/usuario.entity';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { UpdateUsuarioDto } from './dto/update-usuario.dto';
-import { Rol } from '../rol/entities/rol.entity'; // ✅ funciona en Nest y TypeORM CLI
- // ✅ con baseUrl
+import { Rol } from '../rol/entities/rol.entity';
 
 @Injectable()
 export class UsuarioService {
@@ -21,7 +20,15 @@ export class UsuarioService {
     const rol = await this.rolRepo.findOne({ where: { id_rol: dto.id_rol } });
     if (!rol) throw new NotFoundException('Rol no encontrado');
 
-    const usuario = this.usuarioRepo.create({ ...dto, rol });
+    const usuario = this.usuarioRepo.create({
+      cedula: String(dto.cedula),
+      nombre: dto.nombre,
+      correo: dto.correo,
+      telefono: String(dto.telefono),
+      password: dto.password,
+      rol,
+    });
+
     return this.usuarioRepo.save(usuario);
   }
 
@@ -29,11 +36,11 @@ export class UsuarioService {
     return this.usuarioRepo.find({ relations: ['rol'] });
   }
 
-  findOne(cedula: number) {
+  findOne(cedula: string) {
     return this.usuarioRepo.findOne({ where: { cedula }, relations: ['rol'] });
   }
 
-  async update(cedula: number, dto: UpdateUsuarioDto) {
+  async update(cedula: string, dto: UpdateUsuarioDto) {
     const usuario = await this.usuarioRepo.findOne({ where: { cedula } });
     if (!usuario) throw new NotFoundException('Usuario no encontrado');
 
@@ -46,9 +53,16 @@ export class UsuarioService {
     return this.usuarioRepo.save({ ...usuario, ...dto });
   }
 
-  async remove(cedula: number) {
+  async remove(cedula: string) {
     const usuario = await this.usuarioRepo.findOne({ where: { cedula } });
     if (!usuario) throw new NotFoundException('Usuario no encontrado');
     return this.usuarioRepo.remove(usuario);
+  }
+
+  async findByCorreo(correo: string) {
+    return this.usuarioRepo.findOne({
+      where: { correo },
+      relations: ['rol'],
+    });
   }
 }

@@ -1,8 +1,7 @@
-import { IsString, IsEmail, MinLength, IsNotEmpty } from 'class-validator';
+import { IsString, IsEmail, MinLength } from 'class-validator';
 
-export class CreateUsuarioDto {
+export class RegisterAuthDto {
   @IsString()
-  @IsNotEmpty()
   cedula: string;
 
   @IsString()
@@ -17,7 +16,4 @@ export class CreateUsuarioDto {
   @IsString()
   @MinLength(6)
   password: string;
-
-  @IsNotEmpty()
-  id_rol: number;
 }

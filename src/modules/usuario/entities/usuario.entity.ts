@@ -5,13 +5,13 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Rol } from '../../rol/entities/rol.entity'; 
-
+import { Rol } from '../../rol/entities/rol.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Usuario {
   @PrimaryColumn()
-  cedula: number;
+  cedula: string;
 
   @Column()
   nombre: string;
@@ -20,7 +20,11 @@ export class Usuario {
   correo: string;
 
   @Column()
-  telefono: number;
+  telefono: string;
+
+  @Column()
+  @Exclude()
+  password: string;
 
   @ManyToOne(() => Rol, (rol) => rol.usuarios)
   @JoinColumn({ name: 'id_rol' })

@@ -20,6 +20,7 @@ import { TicketModule } from './modules/ticket/ticket.module';
 import { ReporteModule } from './modules/reporte/reporte.module';
 import { MaterialModule } from './modules/material/material.module';
 import { MaterialesxreportesModule } from './modules/materialesxreportes/materialesxreportes.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 
 @Module({
@@ -54,6 +55,7 @@ import { MaterialesxreportesModule } from './modules/materialesxreportes/materia
     ReporteModule,
     MaterialModule,
     MaterialesxreportesModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

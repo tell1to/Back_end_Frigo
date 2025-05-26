@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
@@ -6,6 +6,8 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { PedidoService } from '../pedido/pedido.service';
 import { TecnicoService } from '../tecnico/tecnico.service';
+import { Tecnico } from '../tecnico/entities/tecnico.entity';
+import { Pedido } from '../pedido/entities/pedido.entity';
 
 @Injectable()
 export class TicketService {
@@ -20,9 +22,12 @@ export class TicketService {
     const pedido = await this.pedidoService.findOne(dto.id_pedido);
     const tecnico = await this.tecnicoService.findOne(dto.id_tecnico);
     const ticket = this.ticketRepo.create({
+      fecha_visita: dto.fecha_visita,
+      hora_visita: dto.hora_visita,
+      detalle: dto.detalle,
+      tecnico: tecnico as Tecnico,
+      pedido: pedido as Pedido,
       estado: dto.estado,
-      pedido,
-      tecnico,
     });
     return this.ticketRepo.save(ticket);
   }
@@ -32,26 +37,52 @@ export class TicketService {
   }
 
   async findOne(id: number): Promise<Ticket> {
-    const ticket = await this.ticketRepo.findOne({ where: { id_ticket: id }, relations: ['tecnico', 'pedido', 'reporte'] });
+    const ticket = await this.ticketRepo.findOne({
+      where: { id_ticket: id },
+      relations: ['tecnico', 'pedido', 'reporte'],
+    });
     if (!ticket) throw new NotFoundException(`Ticket ${id} no encontrado`);
     return ticket;
   }
 
   async update(id: number, dto: UpdateTicketDto): Promise<Ticket> {
-    const ticket = await this.findOne(id);
-    Object.assign(ticket, dto);
+    // Verificar existencia
+    const existing = await this.ticketRepo.findOneBy({ id_ticket: id });
+    if (!existing) {
+      throw new NotFoundException(`Ticket ${id} no encontrado`);
+    }
 
+    // Filtrar campos definidos
+    const valuesToUpdate = Object.entries(dto)
+      .filter(([_, v]) => v !== undefined)
+      .reduce((obj, [key, val]) => ({ ...obj, [key]: val }), {});
+
+    if (Object.keys(valuesToUpdate).length === 0) {
+      throw new BadRequestException('No hay campos para actualizar');
+    }
+
+    // Si cambian claves foráneas, resolverlas primero
     if (dto.id_pedido) {
       const pedido = await this.pedidoService.findOne(dto.id_pedido);
-      ticket.pedido = pedido;
+      valuesToUpdate['pedido'] = pedido;
     }
-
     if (dto.id_tecnico) {
       const tecnico = await this.tecnicoService.findOne(dto.id_tecnico);
-      ticket.tecnico = tecnico;
+      valuesToUpdate['tecnico'] = tecnico;
     }
 
-    return this.ticketRepo.save(ticket);
+    // Ejecutar actualización
+    await this.ticketRepo
+      .createQueryBuilder()
+      .update(Ticket)
+      .set(valuesToUpdate)
+      .where('id_ticket = :id', { id })
+      .execute();
+
+    return this.ticketRepo.findOne({
+      where: { id_ticket: id },
+      relations: ['tecnico', 'pedido', 'reporte'],
+    });
   }
 
   async remove(id: number): Promise<void> {

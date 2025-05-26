@@ -16,10 +16,10 @@ export class Reporte {
 
   //Talves nombre
 
-  @Column({ type: 'date' })
+  @Column({ type: 'time' })
   hora_entrada: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'time' })
   hora_salida: string;
 
   @Column()

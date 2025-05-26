@@ -18,7 +18,7 @@ export class Ticket {
   @Column({ type: 'date' })
   fecha_visita: string;
 
-  @Column({ type: 'date' })
+  @Column({ type: 'time' })
   hora_visita: string;
 
   @Column()

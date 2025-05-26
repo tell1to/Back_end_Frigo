@@ -10,7 +10,7 @@ export class AuthService {
   constructor(
     private readonly usuarioService: UsuarioService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) { }
 
   async login(data: LoginAuthDto) {
     const usuario = await this.usuarioService.findByCorreo(data.correo);
@@ -23,14 +23,27 @@ export class AuthService {
 
   async register(data: RegisterAuthDto) {
     const password = await bcrypt.hash(data.password, 10);
-    return this.usuarioService.create({
+    const newUser = await this.usuarioService.create({
       cedula: data.cedula,
       nombre: data.nombre,
       correo: data.correo,
       telefono: data.telefono,
       password,
-      id_rol: 3,
+      id_rol: 1,
     });
+
+    // 3) (Opcional) Recarga el usuario con la relación rol si tu create no la trae:
+    // const userWithRole = await this.usuarioService.findOne(newUser.cedula);
+
+    // 4) Armas el payload con los datos reales
+    const payload = {
+      sub: newUser.cedula,
+      role: newUser.rol?.nombre_rol,
+    };
+    const access_token = this.jwtService.sign(payload);
+
+    // 5) Devuelves el token
+    return { user: newUser, access_token };
   }
 }
 

@@ -14,6 +14,8 @@ export class Reporte {
   @PrimaryGeneratedColumn()
   id_reporte: number;
 
+  //Talves nombre
+
   @Column({ type: 'date' })
   hora_entrada: string;
 

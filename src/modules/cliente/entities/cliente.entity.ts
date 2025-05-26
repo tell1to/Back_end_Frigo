@@ -12,21 +12,17 @@ import { Pedido } from '../../pedido/entities/pedido.entity';
 @Entity()
 export class Cliente {
   @PrimaryColumn()
-  cedula: number;
-
-  @Column()
-  nombre: string;
+  cedula: string;
 
   @Column()
   correo: string;
 
   @Column()
-  telefono: number;
+  telefono: string;
 
-@ManyToOne(() => Usuario, { nullable: false })
-@JoinColumn({ name: 'cedula_usuario' })
-usuario: Usuario;
-
+  @ManyToOne(() => Usuario, (usuario) => usuario.clientes)
+  @JoinColumn({ name: 'cedula_usuario' })
+  usuario: Usuario;
 
   @OneToMany(() => Pedido, (pedido) => pedido.cliente)
   pedidos: Pedido[];

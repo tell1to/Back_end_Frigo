@@ -5,20 +5,26 @@ import { Cliente } from './entities/cliente.entity';
 import { CreateClienteDto } from './dto/create-cliente.dto';
 import { UpdateClienteDto } from './dto/update-cliente.dto';
 import { Usuario } from '../usuario/entities/usuario.entity';
+import { UsuarioService } from '../usuario/usuario.service';
 
 @Injectable()
 export class ClienteService {
   constructor(
     @InjectRepository(Cliente)
     private readonly clienteRepo: Repository<Cliente>,
+
+    private readonly usuarioService: UsuarioService,
   ) {}
 
   async create(dto: CreateClienteDto): Promise<Cliente> {
+    const usuario = await this.usuarioService.findOne(String(dto.cedula_usuario));
+    if (!usuario) throw new NotFoundException('Usuario no encontrado');
+
     const cliente = this.clienteRepo.create({
-      cedula: dto.cedula,
+      cedula: String(dto.cedula),
       correo: dto.correo,
-      telefono: dto.telefono,
-      usuario: { cedula: dto.cedula_usuario } as Usuario,
+      telefono: String(dto.telefono),
+      usuario,
     });
     return this.clienteRepo.save(cliente);
   }
@@ -27,7 +33,7 @@ export class ClienteService {
     return this.clienteRepo.find({ relations: ['usuario', 'pedidos'] });
   }
 
-  async findOne(cedula: number): Promise<Cliente> {
+  async findOne(cedula: string): Promise<Cliente> {
     const cliente = await this.clienteRepo.findOne({
       where: { cedula },
       relations: ['usuario', 'pedidos'],
@@ -38,19 +44,20 @@ export class ClienteService {
     return cliente;
   }
 
-  async update(
-    cedula: number,
-    dto: UpdateClienteDto,
-  ): Promise<Cliente> {
+  async update(cedula: string, dto: UpdateClienteDto): Promise<Cliente> {
     const cliente = await this.findOne(cedula);
     Object.assign(cliente, dto);
+
     if (dto.cedula_usuario) {
-      cliente.usuario = { cedula: dto.cedula_usuario } as Usuario;
+      const usuario = await this.usuarioService.findOne(String(dto.cedula_usuario));
+      if (!usuario) throw new NotFoundException('Usuario no encontrado');
+      cliente.usuario = usuario;
     }
+
     return this.clienteRepo.save(cliente);
   }
 
-  async remove(cedula: number): Promise<void> {
+  async remove(cedula: string): Promise<void> {
     const result = await this.clienteRepo.delete(cedula);
     if (result.affected === 0) {
       throw new NotFoundException(`Cliente con cédula ${cedula} no encontrado`);

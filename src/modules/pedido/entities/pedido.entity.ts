@@ -10,13 +10,10 @@ import { Cliente } from '../../cliente/entities/cliente.entity';
 @Entity()
 export class Pedido {
   @PrimaryGeneratedColumn()
-  id_pedido: number;
+  id: number;
 
   @Column()
   detalle: string;
-
-  @Column()
-  provincia: string;
 
   @Column()
   ciudad: string;
@@ -28,7 +25,7 @@ export class Pedido {
   calleSecundaria: string;
 
   @Column()
-  codigo_postal: number;
+  codigo_postal: string;
 
   @ManyToOne(() => Cliente, (cliente) => cliente.pedidos)
   @JoinColumn({ name: 'cedula_cliente' })

@@ -18,17 +18,17 @@ export class UsuarioController {
   }
 
   @Get(':cedula')
-  findOne(@Param('cedula') cedula: number) {
+  findOne(@Param('cedula') cedula: string) {
     return this.usuarioService.findOne(cedula);
   }
 
   @Put(':cedula')
-  update(@Param('cedula') cedula: number, @Body() dto: UpdateUsuarioDto) {
+  update(@Param('cedula') cedula: string, @Body() dto: UpdateUsuarioDto) {
     return this.usuarioService.update(cedula, dto);
   }
 
   @Delete(':cedula')
-  remove(@Param('cedula') cedula: number) {
+  remove(@Param('cedula') cedula: string) {
     return this.usuarioService.remove(cedula);
   }
 }

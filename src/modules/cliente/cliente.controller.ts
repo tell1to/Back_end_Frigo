@@ -5,8 +5,7 @@ import {
   Body,
   Param,
   Put,
-  Delete,
-  ParseIntPipe,
+  Delete
 } from '@nestjs/common';
 import { ClienteService } from './cliente.service';
 import { CreateClienteDto } from './dto/create-cliente.dto';
@@ -27,20 +26,20 @@ export class ClienteController {
   }
 
   @Get(':cedula')
-  findOne(@Param('cedula', ParseIntPipe) cedula: number) {
+  findOne(@Param('cedula') cedula: string) {
     return this.clienteService.findOne(cedula);
   }
 
   @Put(':cedula')
   update(
-    @Param('cedula', ParseIntPipe) cedula: number,
+    @Param('cedula') cedula: string,
     @Body() dto: UpdateClienteDto,
   ) {
     return this.clienteService.update(cedula, dto);
   }
 
   @Delete(':cedula')
-  remove(@Param('cedula', ParseIntPipe) cedula: number) {
+  remove(@Param('cedula') cedula: string) {
     return this.clienteService.remove(cedula);
   }
 }

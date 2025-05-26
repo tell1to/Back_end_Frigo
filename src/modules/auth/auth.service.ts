@@ -18,7 +18,8 @@ export class AuthService {
     if (!isMatch) return { message: 'Credenciales inválidas' };
 
     const payload = { sub: usuario.cedula, role: usuario.rol?.nombre_rol };
-    return { access_token: this.jwtService.sign(payload) };
+    const access_token = this.jwtService.sign(payload);
+    return { user: usuario, access_token: this.jwtService.sign(payload)  };
   }
 
   async register(data: RegisterAuthDto) {
@@ -31,19 +32,12 @@ export class AuthService {
       password,
       id_rol: 1,
     });
-
-    // 3) (Opcional) Recarga el usuario con la relación rol si tu create no la trae:
-    // const userWithRole = await this.usuarioService.findOne(newUser.cedula);
-
-    // 4) Armas el payload con los datos reales
-    const payload = {
+    /*const payload = {
       sub: newUser.cedula,
       role: newUser.rol?.nombre_rol,
     };
     const access_token = this.jwtService.sign(payload);
-
-    // 5) Devuelves el token
-    return { user: newUser, access_token };
+    return { user: newUser};*/
   }
 }
 

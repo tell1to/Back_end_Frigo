@@ -10,6 +10,7 @@ export class CreateReporteDto {
   readonly capacidad: string;
   readonly volt: string;
   readonly amp: string;
+  readonly cantidad?: number;
   readonly descripcion: string;
   readonly recomendacion: string;
   readonly id_ticket: number;

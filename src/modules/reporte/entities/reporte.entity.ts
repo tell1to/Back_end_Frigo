@@ -50,6 +50,9 @@ export class Reporte {
   amp: string;
 
   @Column()
+  cantidad: number;
+
+  @Column()
   descripcion: string;
 
   @Column()

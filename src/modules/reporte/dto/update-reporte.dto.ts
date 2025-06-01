@@ -1,6 +1,7 @@
 export class UpdateReporteDto {
   readonly hora_entrada?: string;
   readonly hora_salida?: string;
+  readonly estado: string;
   readonly area?: string;
   readonly marca?: string;
   readonly modelo?: string;

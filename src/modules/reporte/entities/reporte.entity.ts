@@ -23,6 +23,9 @@ export class Reporte {
   hora_salida: string;
 
   @Column()
+  estado: string;
+
+  @Column()
   area: string;
 
   @Column()
